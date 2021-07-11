@@ -14,7 +14,7 @@ const ProblemsByCategories = React.lazy(() => import('./pages/ProblemsByCategori
 const TotalProblems = React.lazy(() => import('./pages/TotalProblems'))
 const Problem = React.lazy(() => import('./pages/Problem'))
 const MyProblems = React.lazy(() => import('./pages/MyProblems'))
-
+const ProblemBoard = React.lazy(()=> import('./pages/ProblemBoard'))
 
 // check user Id && paswword for authentication 
 function App() {
@@ -34,6 +34,7 @@ function App() {
                 <Route path = "/problemsbank"  component = {ProblemsByCategories}/>
                 <Route path = "/problem"  component = {Problem}/>
                 <Route path = "/totalproblems"  component = {TotalProblems}/>
+                <Route path = "/problemboard"  component = {ProblemBoard}/>
                 {/* <Route path = "/mylist"  component = {MyProblems}/> */}
                 <Route component = {NotFound} />
             </Switch>

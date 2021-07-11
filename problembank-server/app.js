@@ -42,14 +42,15 @@ app.use(createSession());
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var boardRouter = require('./routes/board');
 var problemsRouter = require('./routes/problems');
 var projectsRouter = require('./routes/projects2');
 
-
+app.use('/board',boardRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/problems', problemsRouter)
-app.use('/projects', projectsRouter)
+app.use('/problems', problemsRouter);
+app.use('/projects', projectsRouter);
 
 
 // projectsRouter(app.io)

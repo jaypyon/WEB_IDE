@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 function Footer(props) {
     return (
         <div>
-            이 프로젝트 PLASS 연구실 개발합니다.
+            본 프로젝트는 동국대학교 PLASS 연구실에서 개발하는 프로젝트입니다.
         </div>
     )
 }

@@ -32,6 +32,8 @@ function Header(props) {
                         </li>
                         <li>
                             <NavLink to="/problemsbank" activeClassName='active_class'>카테고리별 문제</NavLink>
+                        </li><li>
+                            <NavLink to="/problemBoard" activeClassName='active_class'>문제 토론방</NavLink>
                         </li>
                         {/* <li>
                             <NavLink to="" onClick={() => handleClickEditor()} >에디터</NavLink>
