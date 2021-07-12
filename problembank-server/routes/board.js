@@ -47,4 +47,46 @@ router.get('/boarddata', async function(req, res) {
     }
     
 })
+
+//전체문제 출력함
+router.get('/boardposts', async function(req, res) {
+    try {
+        let [rows] = await db.query(sql.board.getAllPosts)
+        //!수정 필요함
+
+        for(let j = 0; j < rows.length; j++)
+        {   
+            
+        }
+        res.status(200).send({
+            result : true,
+            data: rows,
+            message : '전체 게시물 리스트'
+        })
+        
+    } catch (error) {
+        console.log("Problems Data" + error)
+    }
+    
+})
+router.get('/boardcomments', async function(req, res) {
+    try {
+        let [rows] = await db.query(sql.board.getAllComments)
+        //!수정 필요함
+        for(let j = 0; j < rows.length; j++)
+        {
+         console.log(rows)  
+        }
+        res.status(200).send({
+            result : true,
+            data: rows,
+            message : '전체 코멘트 리스트'
+        })
+        
+    } catch (error) {
+        console.log("Problems Data" + error)
+    }
+    
+})
+
 module.exports = router;

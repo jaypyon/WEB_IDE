@@ -1,8 +1,8 @@
 module.exports = {
 
     // SELECT 
-    getAllPosts : "select * from problemboard",
-    getAllComments : "select * from boardcomment",
+    getAllPosts : "select * from plass_problemboard",
+    getAllComments : "select * from plass_boardcomment",
     
     getCategoryProblems : "select * from problems.plass_total_categories where parent_id = 0",
     selectTagById: "select * from problems.plass_total_categories where id = ?",
@@ -24,10 +24,12 @@ module.exports = {
     // INSERT
     setProblemMyList: "insert into problems.plass_mylist_problem(user_id, problem_id) values (?, ?)",
     insertProblemTag: "insert into problems.plass_problem_category(problem_id, category_id) values (?, ?)",
+    
     createNewPost : "insert into problemboard(problem_num,post_title,post_content,post_sourcecode) values(?,?,?,?)",
     createNewComment : "insert into boardcomment(post_id,comment_content) values(?, ?)",
     // DELETE
     removeProblemMyList: "delete from problems.plass_mylist_problem where user_id = ? and problem_id = ?",
+    
     deletePost : "",
     deleteComment : ""
 }

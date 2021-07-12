@@ -10,9 +10,17 @@ const problemBoard = {
         return axiosClient.get(url, { params });
     },
     getBoardData: (params) => {
-        const url = '/board/boarddata';
+        const url = '/board/boardposts';
         return axiosClient.get(url);
-    },
+    },    
+    getBoardCommentData: (params) => {
+        const url = '/board/boardcomment';
+        return axiosClient.get(url);
+    },    
+    // getBoardData: (params) => {
+    //     const url = '/board/boarddata';
+    //     return axiosClient.get(url);
+    // },
     getBoardInformation: (params) => {
         const url = '/board/getboardinfo';
         return axiosClient.get(url);

@@ -5,28 +5,28 @@ import './style.scss'
 var moment = require('moment');
 
 function BoardDisplayTable(props) {
-    const { problems } = props;
+    const { boardposts } = props;
     return (
         <table className="table table-contribution">
             <thead>
                 <tr>
+                    <th width = "5%">순번</th>
+                    <th width = "5%">문제번호</th>
                     <th width = "40%">제목</th>
-                    <th width = "10%">카테고리</th>
-                    <th width = "10%">댓글</th>
-                    <th width = "10%">추천수</th>
-                    <th width = "10%">작성일</th>
+                    <th width = "5%">댓글</th>
+                    <th width = "15%">작성일</th>
                 </tr>
             </thead>
             <tbody>
                 {
-                    problems.map((item,index) => {
+                    boardposts.map((item,index) => {
                         return (
                             <tr key = {index} onClick={() => props.history.push('/board/view?id=1')}>
-                                <th>{item.name}</th>
-                                <td>{item.tagInfo.parent_name} - {item.tagInfo.name}</td>
+                                <th>{item.post_id}</th>
+                                <td>{item.problem_num}</td>
+                                <td>{item.title}</td>
                                 <th>{item.commentnum}</th>
-                                <th>{item.likednum}</th>
-                                <th>{moment(item.created).format("YYYY-MM-DD")}</th>
+                                <th>{moment(item.written_date).format("YYYY-MM-DD")}</th>
                                 
                             </tr>
                         )
