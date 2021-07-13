@@ -73,7 +73,7 @@ function DetailProblem(props) {
             const { data } = response;
             
             var timeOutSubmit = function(){
-                alert(`체점 결과 ${data.correctCount} / ${data.count}`);
+                alert(`채점 결과 ${data.correctCount} / ${data.count}`);
                 setSubmit(false);
             };
             setTimeout(timeOutSubmit, 1000);
@@ -94,7 +94,7 @@ function DetailProblem(props) {
             let problemTemp = {...problem, like : !problem.like};
             setProblem(problemTemp)
         } catch (error) {
-            alert("서버 연결 실패합니다. 다시 시도해주세요.")
+            alert("서버 연결 실패했습니다. 다시 시도해주세요.")
             console.log(error);
         }
     }
@@ -107,7 +107,7 @@ function DetailProblem(props) {
         dummy.select();
         document.execCommand('copy');
         document.body.removeChild(dummy);
-        alert("링크를 복사 되었습니다")
+        alert("링크가 복사 되었습니다")
     }
 
     if(loading){
@@ -119,10 +119,10 @@ function DetailProblem(props) {
                 <div className="problem__detail--content">
                     <div className="tab__header">
                         <ul className="tab__header--content">
-                            <li style={{background: 'white'}} onClick={() => alert("현재 개발중인 기능 입니다...")}>설명</li>
+                            <li style={{background: 'white'}} onClick={() => alert("현재 개발중인 기능 입니다...")}>해설</li>
                             {/* <li onClick={() => alert("현재 개발중인 기능 입니다...")}>답안</li>
                             <span>|</span> */}
-                            <li onClick={() => alert("현재 개발중인 기능 입니다...")}>토론</li>
+                            <li onClick={() => props.history.push(`/postupload/view?id=${problem.id}`)}>질문등록</li>
                             {/* <span>|</span>
                             <li onClick={() => alert("현재 개발중인 기능 입니다...")}>Submit</li> */}
                         </ul>

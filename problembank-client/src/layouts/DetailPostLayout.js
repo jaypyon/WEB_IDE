@@ -2,7 +2,7 @@ import React from 'react'
 import Header from '../components/Header';
 import FooterMainPage from '../pages/MainPage/components/FooterMainPage';
 
-function DetailPostLayout(props) {
+function DetailProblemLayout(props) {
     const { children } = props;
     return (
         <div className="row">
@@ -15,5 +15,5 @@ function DetailPostLayout(props) {
 }
 
 
-export default DetailPostLayout
+export default DetailProblemLayout
 

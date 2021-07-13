@@ -6,6 +6,7 @@ var moment = require('moment');
 
 function BoardDisplayTable(props) {
     const { boardposts } = props;
+    console.log(boardposts);
     return (
         <table className="table table-contribution">
             <thead>
@@ -24,8 +25,8 @@ function BoardDisplayTable(props) {
                             <tr key = {index} onClick={() => props.history.push('/board/view?id=1')}>
                                 <th>{item.post_id}</th>
                                 <td>{item.problem_num}</td>
-                                <td>{item.title}</td>
-                                <th>{item.commentnum}</th>
+                                <td>{item.post_title}</td>
+                                <th>{item.comment_num}</th>
                                 <th>{moment(item.written_date).format("YYYY-MM-DD")}</th>
                                 
                             </tr>

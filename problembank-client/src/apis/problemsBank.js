@@ -1,6 +1,6 @@
 import axiosClient from './axios'
 
-const problemBoard = {
+const problemsBank = {
     getCategory: (params) => {
         const url = '/problems/getcategory';
         return axiosClient.get(url, { params });
@@ -27,4 +27,4 @@ const problemBoard = {
     }
 }
 
-export default problemBoard;
+export default problemsBank;

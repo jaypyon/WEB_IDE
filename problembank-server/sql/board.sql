@@ -14,7 +14,12 @@ CREATE TABLE plass_boardcomment (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-insert into plass_boardcomment(post_id,comment_content) values(1,"안녕하세요");
+insert into plass_boardcomment(post_id,comment_content) values(1,"안녕하세요1");
+insert into plass_boardcomment(post_id,comment_content) values(2,"안녕하세요1");
+insert into plass_boardcomment(post_id,comment_content) values(2,"안녕하세요2");
+insert into plass_boardcomment(post_id,comment_content) values(2,"안녕하세요3");
+insert into plass_boardcomment(post_id,comment_content) values(2,"안녕하세요4");
+insert into plass_boardcomment(post_id,comment_content) values(1,"안녕하세요2");
 
 insert into plass_problemboard(problem_num,post_title,post_content,post_sourcecode) 
 values(1,"제목입니다.","이 문제를 모르겠어요, 블라블라","#include<lorem.ipsum>\n\r blah blah");

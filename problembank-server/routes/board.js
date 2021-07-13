@@ -7,48 +7,8 @@ var randomstring = require("randomstring");
 var fileController = require('../modules/file-controller');
 var path = require('path');
 
-// Check user for api
-// router.use(checkLoginMiddleWare.injectUerforAPI)
-
-
 //전체문제 출력함
-router.get('/boarddata', async function(req, res) {
-    try {
-        let [rows] = await db.query(sql.board.selectProblems)
-        //!수정 필요함
-        for(let j = 0; j < rows.length; j++)
-        {
-            var { id } = rows[j];
-            //해당하는 문제의 테스트 케이스를 출력함
-            let [testcases] = await db.query(sql.board.selectTestCaseFromProblemId,[id])
-            let filterTestCase = testcases.map(testcase => ({
-                input_exp: testcase.input_example, 
-                output_exp: testcase.output_example
-                }
-            ))
-            rows[j]["testcases"] = filterTestCase;
-
-            //해당하는 문제는 Category를 출력
-            let [row] = await db.query(sql.board.selectCategoryFromProblemId,[id]);
-            let { parent_id } = row[0];
-            let [tagRow] = await db.query(sql.board.getNameTag, [parent_id]);
-            row[0]["parent_name"] = tagRow[0].name;
-            rows[j]["tagInfo"] = row[0];
-
-        }
-        res.status(200).send({
-            result : true,
-            data: rows,
-            message : '전체 문제 리스트'
-        })
-        
-    } catch (error) {
-        console.log("Problems Data" + error)
-    }
-    
-})
-
-//전체문제 출력함
+/**@param temp {댓글 갯수 추출}}*/
 router.get('/boardposts', async function(req, res) {
     try {
         let [rows] = await db.query(sql.board.getAllPosts)
@@ -56,8 +16,13 @@ router.get('/boardposts', async function(req, res) {
 
         for(let j = 0; j < rows.length; j++)
         {   
-            
+             [comment_num] = await db.query(sql.board.getTargetCommentsNum,rows[j]["post_id"]);
+             [comments] = await db.query(sql.board.getTargetComments,rows[j]["post_id"]);
+             console.log(comments);
+             rows[j]["comment_num"] = comment_num[0]["comment_num"];
+             rows[j]["comments_info"] = comments;
         }
+
         res.status(200).send({
             result : true,
             data: rows,
@@ -88,5 +53,134 @@ router.get('/boardcomments', async function(req, res) {
     }
     
 })
+router.post('/writepost', async function(req, res){
+    const { sourceCode, problemId, language } = req.body;
+    const [testCases] = await db.query(sql.problems.selectTestCaseByProblemId, [problemId]);
+    let correctCount = 0;
+    try {
+        const promises = testCases.map(testcase => {
+            return new Promise((resolve) => {
+                const docker = compiler.getProblemDocker(sourceCode, language);
 
+                let isStarted = false;
+                docker.stderr.on("data", (data) => {
+                    console.log(data.toString('utf-8'));
+                })
+    
+                docker.stdout.on("data", (data) => {
+                    if(!isStarted) return;
+                    const line = data.toString('utf-8');
+                    if(line.includes(testcase.output)) correctCount++;
+                })
+    
+                docker.stdout.on("data", (data) => {
+                    const line = data.toString('utf-8');
+                    if(line.includes(startDelem)) {
+                        isStarted = true;
+                        docker.stdin.write(Buffer.from(testcase.input + "\n"));
+                    } else if(line.includes(endDelem)) {
+                        isStarted = false;
+                        resolve();
+                    }
+                });
+            });
+        })
+        
+        res.status(200).send({
+            result: true,
+            data:  { correctCount, count: testCases.length },
+            message: 'compile success'
+        })
+    
+        for(let i = 0 ; i < promises.length; i++) { await promises[i] } // TODO: recfectoring this
+    } catch (error) {
+        console.log(error)
+        res.status(404).send({
+            result: false,
+            data: [],
+            message: error
+        })
+    }
+
+    // socket.emit("result", { correctCount, count: testCases.length })
+    // socket.leave();
+})  
+
+router.post('/writecomment', async function(req, res){
+    try {
+        const { post_id,comment_content } = req.body;
+        console.log(req.body)
+        const testCases = await db.query(sql.board.createNewComment, [post_id,comment_content]);
+        res.status(200).send({
+            result: true,
+            data:  { count: testCases.length },
+            message: 'post success'
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(404).send({
+            result: false,
+            data: [],
+            message: error
+        })
+    }
+})  
+router.post('/deletecomment', async function(req, res){
+    try {
+        const { comment_id } = req.body;
+        console.log(req.body)
+        const testCases = await db.query(sql.board.deleteComment, [comment_id]);
+        res.status(200).send({
+            result: true,
+            data:  { count: testCases.length },
+            message: 'post success'
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(404).send({
+            result: false,
+            data: [],
+            message: error
+        })
+    }
+})  
+
+router.post('/writepost', async function(req, res){
+    try {
+        const { post_id,comment_content } = req.body;
+        console.log(req.body)
+        const testCases = await db.query(sql.board.createNewComment, [post_id,comment_content]);
+        res.status(200).send({
+            result: true,
+            data:  { count: testCases.length },
+            message: 'post success'
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(404).send({
+            result: false,
+            data: [],
+            message: error
+        })
+    }
+})  
+router.post('/deletepost', async function(req, res){
+    try {
+        const { comment_id } = req.body;
+        console.log(req.body)
+        const testCases = await db.query(sql.board.deleteComment, [comment_id]);
+        res.status(200).send({
+            result: true,
+            data:  { count: testCases.length },
+            message: 'post success'
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(404).send({
+            result: false,
+            data: [],
+            message: error
+        })
+    }
+})  
 module.exports = router;
