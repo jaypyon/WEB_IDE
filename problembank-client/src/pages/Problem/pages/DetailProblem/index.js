@@ -137,7 +137,7 @@ function DetailProblem(props) {
                         </ul>
                         <div className="problem__infor">
                             <div className="problem__infor--desc">
-                                <p>문재 정의</p>
+                                <p>문제 정의</p>
                                 <span>{problem.content}</span>
                             </div>
                             <div className="problem__infor--input">

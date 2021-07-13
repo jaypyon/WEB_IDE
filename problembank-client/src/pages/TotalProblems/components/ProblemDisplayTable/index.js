@@ -19,9 +19,9 @@ function ProblemDisplayTable(props) {
             </thead>
             <tbody>
                 {
-                    problems.map((item,index) => {
+                    problems.map((item) => {
                         return (
-                            <tr key = {index} onClick={() => props.history.push('/problem/view?id=1')}>
+                            <tr onClick={() => props.history.push(`/problem/view?id=${item.id}`)}>
                                 <th>{item.id}</th>
                                 <td>{item.name}</td>
                                 <th>{item.level}</th>

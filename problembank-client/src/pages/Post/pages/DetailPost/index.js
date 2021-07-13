@@ -83,6 +83,21 @@ function DetailPost(props) {
             alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
         }
     }
+    const onDeletePost = async (param) => {
+        try {
+            setSubmit(true)
+            const res = await projectsAPI.deletePost({
+                post_id: Number(param),
+            });
+            var timeOutSubmit = function(){
+                 setSubmit(false);
+            };
+            setTimeout(timeOutSubmit, 1000);
+        } catch (error) {
+            setSubmit(false);
+            alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
+        }
+    }
     const handleCopyURL = () => {
         var dummy = document.createElement('input'),
         text = window.location.href;
@@ -109,10 +124,15 @@ function DetailPost(props) {
                         </ul>
                     </div>
                     <div className="wrapper__content">
-                        <h3>{post.post_id}. {post.post_title}</h3>
+                        <h3>{post.post_title}</h3>
                         <ul className="tab__header--task">
                             <li style={{cursor: 'pointer'}} onClick={() => handleCopyURL()}><i className="fa fa-share-square-o"></i> Share</li>
                             <li>Created: {moment(post.written_date).format("YYYY-MM-DD")}</li>
+                            <li Style="color: #546E74;font-size: 13px;text-align: -webkit-right;" style={{cursor: 'pointer'}} onClick={() => {
+                                                    onDeletePost(post.post_id).then((res)=>{
+                                                        alert("게시물이 삭제되었습니다.")
+                                                        props.history.push(`/problemboard`)
+                                                    })}}>delete</li>
 
                         </ul>
                         <div className="problem__infor">
@@ -135,7 +155,6 @@ function DetailPost(props) {
                                 posts.length !== 0 ?
                                     <>
                                     <button onClick={() => props.history.push(`/board/view?id=${post.post_id - 1}`)} disabled={post.post_id === posts[0].post_id} >Prev</button>&nbsp;
-                                        <span>{post.post_id}/{posts.length}</span>&nbsp;
                                     <button onClick={() => props.history.push(`/board/view?id=${post.post_id + 1}`)} disabled={post.post_id === posts[posts.length-1].post_id}>Next</button>
                                     </>
                                 : ""
@@ -156,7 +175,7 @@ function DetailPost(props) {
                                         post.comments_info.map(comment_ => 
                                             <form className="comment-form" >
                                                 <div className="comment-form-fields">
-                                                <i Style="font-size:28px;" className="fa fa-smile-o "> </i>&nbsp;<li style={{cursor: 'pointer'}} onClick={() => {
+                                                <i Style="font-size:28px;" className="fa fa-smile-o "> </i>&nbsp;<li Style="color: #546E74;font-size: 13px;text-align: -webkit-right;" style={{cursor: 'pointer'}} onClick={() => {
                                                     onDelete(comment_.comment_id).then((res)=>{
                                                         alert("댓글이 삭제되었습니다.")
                                                         window.location.reload()

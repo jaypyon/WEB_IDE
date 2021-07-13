@@ -92,23 +92,6 @@ router.post('/deletecomment', async function(req, res){
         })
     }
 })  
-// router.get('/writepost', async function(req, res){
-//     try {
-//         const testCases = await db.query(sql.board.createNewPost, [5,"post_title","post_content","post_sourcecode"]);
-//         res.status(200).send({
-//             result: true,
-//             data:  { count: testCases.length },
-//             message: 'post success'
-//         })
-//     } catch (error) {
-//         console.log(error)
-//         res.status(404).send({
-//             result: false,
-//             data: [],
-//             message: error
-//         })
-//     }
-// })  
 router.post('/writepost', async function(req, res){
     try {
         const { problem_num,post_title,post_content,post_sourcecode } = req.body;
@@ -130,9 +113,9 @@ router.post('/writepost', async function(req, res){
 })  
 router.post('/deletepost', async function(req, res){
     try {
-        const { comment_id } = req.body;
+        const { post_id } = req.body;
         console.log(req.body)
-        const testCases = await db.query(sql.board.deleteComment, [comment_id]);
+        const testCases = await db.query(sql.board.deletePost, [post_id]);
         res.status(200).send({
             result: true,
             data:  { count: testCases.length },
