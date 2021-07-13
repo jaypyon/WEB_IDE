@@ -53,58 +53,6 @@ router.get('/boardcomments', async function(req, res) {
     }
     
 })
-router.post('/writepost', async function(req, res){
-    const { sourceCode, problemId, language } = req.body;
-    const [testCases] = await db.query(sql.problems.selectTestCaseByProblemId, [problemId]);
-    let correctCount = 0;
-    try {
-        const promises = testCases.map(testcase => {
-            return new Promise((resolve) => {
-                const docker = compiler.getProblemDocker(sourceCode, language);
-
-                let isStarted = false;
-                docker.stderr.on("data", (data) => {
-                    console.log(data.toString('utf-8'));
-                })
-    
-                docker.stdout.on("data", (data) => {
-                    if(!isStarted) return;
-                    const line = data.toString('utf-8');
-                    if(line.includes(testcase.output)) correctCount++;
-                })
-    
-                docker.stdout.on("data", (data) => {
-                    const line = data.toString('utf-8');
-                    if(line.includes(startDelem)) {
-                        isStarted = true;
-                        docker.stdin.write(Buffer.from(testcase.input + "\n"));
-                    } else if(line.includes(endDelem)) {
-                        isStarted = false;
-                        resolve();
-                    }
-                });
-            });
-        })
-        
-        res.status(200).send({
-            result: true,
-            data:  { correctCount, count: testCases.length },
-            message: 'compile success'
-        })
-    
-        for(let i = 0 ; i < promises.length; i++) { await promises[i] } // TODO: recfectoring this
-    } catch (error) {
-        console.log(error)
-        res.status(404).send({
-            result: false,
-            data: [],
-            message: error
-        })
-    }
-
-    // socket.emit("result", { correctCount, count: testCases.length })
-    // socket.leave();
-})  
 
 router.post('/writecomment', async function(req, res){
     try {
@@ -144,15 +92,31 @@ router.post('/deletecomment', async function(req, res){
         })
     }
 })  
-
+// router.get('/writepost', async function(req, res){
+//     try {
+//         const testCases = await db.query(sql.board.createNewPost, [5,"post_title","post_content","post_sourcecode"]);
+//         res.status(200).send({
+//             result: true,
+//             data:  { count: testCases.length },
+//             message: 'post success'
+//         })
+//     } catch (error) {
+//         console.log(error)
+//         res.status(404).send({
+//             result: false,
+//             data: [],
+//             message: error
+//         })
+//     }
+// })  
 router.post('/writepost', async function(req, res){
     try {
-        const { post_id,comment_content } = req.body;
-        console.log(req.body)
-        const testCases = await db.query(sql.board.createNewComment, [post_id,comment_content]);
+        const { problem_num,post_title,post_content,post_sourcecode } = req.body;
+        console.log("sapdmsapodposa : "+req.body)
+        const testCases = await db.query(sql.board.createNewPost, [problem_num,post_title,post_content,post_sourcecode]);
         res.status(200).send({
             result: true,
-            data:  { count: testCases.length },
+            data:  { problem_num,post_title,post_content,post_sourcecode },
             message: 'post success'
         })
     } catch (error) {

@@ -1,21 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react'
-import './style.scss'
+import './stylePost.scss'
+import { ControlledEditor } from "@monaco-editor/react";
+import SampleCode from '../../../../constansts/SampleCode';
 import { useDispatch, useSelector } from 'react-redux';
 import queryString from 'query-string'
-import { getBoardData } from '../../../../_actions/boardAction';
+import { getProblemData } from '../../../../_actions/problemAction';
+import projectsAPI from '../../../../apis/projects';
+import problemsBank from '../../../../apis/problemsBank';
 import WrapperLoading from '../../../../components/WrapperLoading';
 import Loading from '../../../../components/Loading/Loading';
-import DetailPostLayout from '../../../../layouts/DetailPostLayout';
-import projectsAPI from '../../../../apis/projects';
+import DetailProblemLayout from '../../../../layouts/DetailProblemLayout';
 var moment = require('moment');
 
 function PostUpload(props) {
-    const [posts, setPosts] = useState([])
-    const [post, setPost] = useState({})
-    const postsAllData = useSelector(state => state.post);
-    const [submit, setSubmit] = useState(false)
+    const [problems, setProblems] = useState([])
+    const [problem, setProblem] = useState({})
+    const {problemsAllData} = useSelector(state => state.problem);
 
-    const [comment_value, setCommentValue] = useState({})
+    const [language, setLanguage] = useState("c")
+    const [contentEditor, setContentEditor] = useState(SampleCode["c"])
+    const [submit, setSubmit] = useState(false)
+    const [theme, setTheme] = useState("white")
     
     const dispatch = useDispatch();
     
@@ -24,47 +29,50 @@ function PostUpload(props) {
     const { id } = queryString.parse(props.location.search);
 
     useEffect(() => {
-        if(postsAllData){
-            const { data }  = postsAllData;
-            const [ post ] = data.filter(element =>Number(element.post_id) === Number(id))
-            setPosts(data)
+        if(problemsAllData){
+            const { data }  = problemsAllData;
+            const [ problem ] = data.filter(element =>Number(element.id) === Number(id))
+            setProblems(data)
             setLoading(false)
-            setPost(post)
+            setProblem(problem)
         }else{
-            dispatch(getBoardData()).then(response => {
+            dispatch(getProblemData()).then(response => {
                 const { data } = response.payload
-                const [ post ] = data.filter(element =>Number(element.post_id) === Number(id))
+                const [ problem ] = data.filter(element =>Number(element.id) === Number(id))
                 
-                console.log(post)
-                setPost(post)
-                setPosts(data)
+                console.log(problem)
+                setProblem(problem)
+                setProblems(data)
                 setLoading(false)
             })
         }
     }, [id])
 
     const handleEditorChange = (env, value) => {
-        //setContentEditor(value)
+        setContentEditor(value)
     }
     
     //submit content editor & problem
     const onSubmit = async () => {
         try {
             setSubmit(true)
-            const postId = queryString.parse(window.location.search).id;
+            const problemId = queryString.parse(window.location.search).id;
              
-            const res = await projectsAPI.writeComment({
-                post_id: Number(postId),
-                comment_content: document.getElementById("comment-text-data").value
+            const res = await projectsAPI.writePost({
+                problem_num: Number(problemId),
+                post_title: document.getElementById("post-text-data--title").value,
+                post_content: document.getElementById("post-text-data--content").value,
+                post_sourcecode: document.getElementById("post-text-data--sourcecode").value
             });
             var timeOutSubmit = function(){
                  setSubmit(false);
-            };
+            };console.log(res);
             setTimeout(timeOutSubmit, 1000);
         } catch (error) {
             setSubmit(false);
             alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
         }
+        
     }
     const onDelete = async (param) => {
         try {
@@ -83,6 +91,19 @@ function PostUpload(props) {
             alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
         }
     }
+    const handleProblemToList = async (id) => {
+        try {
+            const params = {
+                problemId : id
+            }
+            const response = await problemsBank.ProblemToMyList(params);
+            let problemTemp = {...problem, like : !problem.like};
+            setProblem(problemTemp)
+        } catch (error) {
+            alert("서버 연결 실패했습니다. 다시 시도해주세요.")
+            console.log(error);
+        }
+    }
     const handleCopyURL = () => {
         var dummy = document.createElement('input'),
         text = window.location.href;
@@ -99,44 +120,69 @@ function PostUpload(props) {
         return <Loading  type={'bars'} color={'black'}  />
     }
     return (
-        post?
-        <DetailPostLayout>
+        <DetailProblemLayout>
             <div className="problem__detail">
                 <div className="problem__detail--content">
                     <div className="tab__header">
                         <ul className="tab__header--content">
-                            <li onClick={() => props.history.push(`/problem/view?id=${post.problem_num}`)}>문제 보기</li>
+                            <li style={{background: 'white'}} onClick={() => alert("현재 개발중인 기능 입니다...")}>해설</li>
+                            {/* <li onClick={() => alert("현재 개발중인 기능 입니다...")}>답안</li>
+                            <span>|</span> */}
+                            <li onClick={() => props.history.push(`/postupload/view?id=${problem.id}`)}>질문등록</li>
+                            {/* <span>|</span>
+                            <li onClick={() => alert("현재 개발중인 기능 입니다...")}>Submit</li> */}
                         </ul>
                     </div>
                     <div className="wrapper__content">
-                        <h3>{post.post_id}. {post.post_title}</h3>
+                        <h3>{problem.id}. {problem.name}</h3>
                         <ul className="tab__header--task">
+                            <li style={{cursor: 'pointer'}} onClick={() => handleProblemToList(problem.id)}><i className="fa fa-list-alt"></i> { problem.like ? "Remove list" : "Add to list"}</li> 
                             <li style={{cursor: 'pointer'}} onClick={() => handleCopyURL()}><i className="fa fa-share-square-o"></i> Share</li>
-                            <li>Created: {moment(post.written_date).format("YYYY-MM-DD")}</li>
-
+                            <li>Created: {moment(problem.created).format("YYYY-MM-DD")}</li>
+                            <li>Language: {problem.language}</li>
                         </ul>
                         <div className="problem__infor">
                             <div className="problem__infor--desc">
-                                <p>내용</p>
-                                <span>{post.post_content}</span>
+                                <p>문재 정의</p>
+                                <span>{problem.content}</span>
                             </div>
-                            <div className="problem__infor--sourcecode">
-                                <p>소스 코드</p>
-                                <span className="sourcecode">{post.post_sourcecode}</span>
+                            <div className="problem__infor--input">
+                                <p>입력</p>
+                                <span>{problem.input}</span>
+                            </div>
+                            <div className="problem__infor--output">
+                                <p>츨력</p>
+                                <span>{problem.output}</span>
+                            </div>
+                            <div className="problem__infor--example">
+                                <div className="problem__infor--inputexp">
+                                    <p>입력 예제</p>
+                                    {
+                                        problem.testcases.length !== 0 &&
+                                            problem.testcases.map(testcase => <span>{testcase.input_exp}</span>)
+                                    }
+                                </div>
+                                <div className="problem__infor--outputexp">
+                                    <p>출력 예제</p>
+                                    {
+                                        problem.testcases.length !== 0 &&
+                                            problem.testcases.map(testcase => <span>{testcase.output_exp}</span>)
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div className="tab__footer">
                         <div className="review__listproblem">
-                            <span onClick={() => props.history.push('/problemboard')}><i className="fa fa-list"></i>&nbsp;문제 토론방</span>
+                            <span onClick={() => props.history.push('/totalproblems')}><i className="fa fa-list"></i>&nbsp;Problem</span>
                         </div>
                         <div className="pre-next-problem">
                             {
-                                posts.length !== 0 ?
+                                problems.length !== 0 ?
                                     <>
-                                    <button onClick={() => props.history.push(`/board/view?id=${post.post_id - 1}`)} disabled={post.post_id === posts[0].post_id} >Prev</button>&nbsp;
-                                        <span>{post.post_id}/{posts.length}</span>&nbsp;
-                                    <button onClick={() => props.history.push(`/board/view?id=${post.post_id + 1}`)} disabled={post.post_id === posts[posts.length-1].post_id}>Next</button>
+                                    <button onClick={() => props.history.push(`/problem/view?id=${problem.id - 1}`)} disabled={problem.id === problems[0].id} >Prev</button>&nbsp;
+                                        <span>{problem.id}/{problems.length}</span>&nbsp;
+                                    <button onClick={() => props.history.push(`/problem/view?id=${problem.id + 1}`)} disabled={problem.id === problems[problems.length-1].id}>Next</button>
                                     </>
                                 : ""
                                 
@@ -144,39 +190,19 @@ function PostUpload(props) {
                         </div>
                     </div>
                 </div>
-                
-                <div className="problem__detail--commentarea">
+                <div className="problem__detail--content">
                                { submit ? <div className="wrapper__editor--submit">
                                     <WrapperLoading />
                                 </div> : ""}
                     <br/>
-                    <div Style="overflow-y: scroll; height:600px;">
-                                    {
-                                        post.comments_info.length !== 0 &&
-                                        post.comments_info.map(comment_ => 
-                                            <form className="comment-form" >
-                                                <div className="comment-form-fields">
-                                                <i Style="font-size:28px;" className="fa fa-smile-o "> </i>&nbsp;<li style={{cursor: 'pointer'}} onClick={() => {
-                                                    onDelete(comment_.comment_id).then((res)=>{
-                                                        alert("댓글이 삭제되었습니다.")
-                                                        window.location.reload()
-                                                    })
-                                                    
-                                                }}> delete</li>
-                                                <p Style="border-bottom: 1px solid #838383;">{" "+comment_.comment_content}</p>
-                                                </div>  
-                                                <li Style="color: #546E74;font-size: 13px;text-align: -webkit-right;">Created: {moment(comment_.created_at).format("YYYY-MM-DD HH:mm:ss")}</li>
-                                                
-                                                
-                                            </form>
-                                        )
-                                    }
-                    </div>
+
                     <br/>            
-                            <form className="comment-form" >
+                            <form className="post-form" >
                                 <i className="fa fa-list"></i>
-                                <div className="comment-form-fields">
-                                <textarea id="comment-text-data" placeholder=" 의견을 남겨주세요 !" ></textarea>
+                                <div className="post-form-fields">
+                                <textarea id="post-text-data--title" placeholder=" 제목" ></textarea><br/><br/>
+                                <textarea id="post-text-data--content" placeholder=" 내용" ></textarea><br/><br/>
+                                <textarea id="post-text-data--sourcecode" placeholder=" 소스코드" ></textarea><br/>
                                 </div>
                                 
                             </form>
@@ -184,20 +210,19 @@ function PostUpload(props) {
                             <button onClick={() => 
                                     {
                                        onSubmit().then((res)=>{
-                                           alert("댓글이 게시되었습니다.")
+                                           alert("질문이 게시되었습니다.")
                                            window.location.reload()
                                         });
-                                    }} >댓글 작성</button>    
+                                    }} >질문 작성</button>    
                             </div>
                             
                     </div>
-                <div className="wrapper__editor">
-                    
-                </div>
+                
             </div>
-        </DetailPostLayout>:""
+        </DetailProblemLayout>
     )
-};
+}
+
 
 export default PostUpload;
 
