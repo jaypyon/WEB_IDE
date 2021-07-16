@@ -24,14 +24,6 @@ function App() {
       <Suspense fallback = {<Loading type={'bars'} color={'black'} />}>
         <BrowserRouter>
             <Switch>
-                {/* <Route exact path = "/"  component = {Auth(MainPage, true)}/>
-                <Route path = "/problemsbank"  component = {Auth(ProblemsByCategories, true)}/>
-                <Route path = "/problem"  component = {Auth(Problem, true)}/>
-                <Route path = "/totalproblems"  component = {Auth(TotalProblems, true)}/>
-                <Route path = "/mylist"  component = {Auth(MyProblem
-                  s, true)}/>
-                <Route component = {NotFound} /> */}
-
                 <Route exact path = "/"  component = {MainPage}/>
                 <Route path = "/problemsbank"  component = {ProblemsByCategories}/>
                 <Route path = "/problem"  component = {Problem}/>
@@ -39,7 +31,6 @@ function App() {
                 <Route path = "/problemboard"  component = {ProblemBoard}/>
                 <Route path = "/board"  component = {Post}/>
                 <Route path = "/postupload"  component = {PostUpload}/>
-                {/* <Route path = "/mylist"  component = {MyProblems}/> */}
                 <Route component = {NotFound} />
             </Switch>
           </BrowserRouter>

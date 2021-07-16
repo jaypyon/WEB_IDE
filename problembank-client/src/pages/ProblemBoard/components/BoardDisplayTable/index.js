@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom';
 import './style.scss'
 var moment = require('moment');
-
+//질문 게시판에서 문제를 보여주는 테이블 컴포넌트
 function BoardDisplayTable(props) {
     const { boardposts } = props;
     console.log(boardposts);

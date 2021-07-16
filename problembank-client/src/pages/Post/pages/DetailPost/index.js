@@ -9,6 +9,7 @@ import DetailPostLayout from '../../../../layouts/DetailPostLayout';
 import projectsAPI from '../../../../apis/projects';
 var moment = require('moment');
 
+// 게시물 상세 정보와 코멘트를 달 수 있는 컴포넌트
 function DetailPost(props) {
     const [posts, setPosts] = useState([])
     const [post, setPost] = useState({})
@@ -42,12 +43,8 @@ function DetailPost(props) {
             })
         }
     }, [id])
-
-    const handleEditorChange = (env, value) => {
-        //setContentEditor(value)
-    }
     
-    //submit content editor & problem
+    //현재 보고있는 게시물에 댓글 업로드하는 요청을 제출합니다.
     const onSubmit = async () => {
         try {
             setSubmit(true)
@@ -66,6 +63,7 @@ function DetailPost(props) {
             alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
         }
     }
+    //선택된 댓글을 삭제하는 요청을 제출합니다.
     const onDelete = async (param) => {
         try {
             setSubmit(true)
@@ -83,6 +81,7 @@ function DetailPost(props) {
             alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
         }
     }
+    //현재 보고있는 게시물을 삭제하는 요청을 제출합니다.
     const onDeletePost = async (param) => {
         try {
             setSubmit(true)
@@ -98,6 +97,7 @@ function DetailPost(props) {
             alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
         }
     }
+    //현재 보고있는 게시물의 링크를 복사합니다.
     const handleCopyURL = () => {
         var dummy = document.createElement('input'),
         text = window.location.href;

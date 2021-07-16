@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './stylePost.scss'
-import { ControlledEditor } from "@monaco-editor/react";
-import SampleCode from '../../../../constansts/SampleCode';
 import { useDispatch, useSelector } from 'react-redux';
 import queryString from 'query-string'
 import { getProblemData } from '../../../../_actions/problemAction';
@@ -16,16 +14,10 @@ function PostUpload(props) {
     const [problems, setProblems] = useState([])
     const [problem, setProblem] = useState({})
     const {problemsAllData} = useSelector(state => state.problem);
-
-    const [language, setLanguage] = useState("c")
-    const [contentEditor, setContentEditor] = useState(SampleCode["c"])
     const [submit, setSubmit] = useState(false)
-    const [theme, setTheme] = useState("white")
     
     const dispatch = useDispatch();
-    
     const [loading, setLoading] = useState(true)
-    
     const { id } = queryString.parse(props.location.search);
 
     useEffect(() => {
@@ -47,12 +39,8 @@ function PostUpload(props) {
             })
         }
     }, [id])
-
-    const handleEditorChange = (env, value) => {
-        setContentEditor(value)
-    }
     
-    //submit content editor & problem
+    //현재 보고있는 문제에 게시물을 업로드 하는 요청을 전송합니다.
     const onSubmit = async () => {
         try {
             setSubmit(true)
@@ -74,23 +62,6 @@ function PostUpload(props) {
         }
         
     }
-    const onDelete = async (param) => {
-        try {
-            setSubmit(true)
-            const postId = queryString.parse(window.location.search).id;
-             
-            const res = await projectsAPI.deleteComment({
-                comment_id: Number(param),
-            });
-            var timeOutSubmit = function(){
-                 setSubmit(false);
-            };
-            setTimeout(timeOutSubmit, 1000);
-        } catch (error) {
-            setSubmit(false);
-            alert("서버오류입니다. 잠시 후 다시 시도해주세요." + error);
-        }
-    }
     const handleProblemToList = async (id) => {
         try {
             const params = {
@@ -104,6 +75,7 @@ function PostUpload(props) {
             console.log(error);
         }
     }
+    //현재 보고있는 문제의 링크를 복사합니다.
     const handleCopyURL = () => {
         var dummy = document.createElement('input'),
         text = window.location.href;
@@ -143,7 +115,7 @@ function PostUpload(props) {
                         </ul>
                         <div className="problem__infor">
                             <div className="problem__infor--desc">
-                                <p>문재 정의</p>
+                                <p>문제 정의</p>
                                 <span>{problem.content}</span>
                             </div>
                             <div className="problem__infor--input">
